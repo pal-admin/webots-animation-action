@@ -62,7 +62,7 @@ class Competitor:
         return {
             'id': self.__get_id(),
             'rank': self.rank,
-            'points': self.points
+            'points': self.points,
             'username': self.username,
             'repository_name': self.repository_name
         }
