@@ -38,6 +38,7 @@ class Competitor:
         self.username = None
         self.repository_name = None
         self.controller_name = None
+        self.points = 0.0
         if self.git:
             self.username, self.repository_name = re.findall(
                 r'github\.com\/([a-zA-Z0-9\-\_]*)\/([a-zA-Z0-9\-\_]*)', self.git
@@ -61,6 +62,7 @@ class Competitor:
         return {
             'id': self.__get_id(),
             'rank': self.rank,
+            'points': self.points
             'username': self.username,
             'repository_name': self.repository_name
         }
@@ -137,17 +139,12 @@ def generate_competition(competition_config):
     _clone_controllers(competitors)
     compile_controllers()
 
-    lower_competitor_index = len(competitors) - 1
-    while lower_competitor_index > 0:
-        competitor_a = competitors[lower_competitor_index - 1]
-        competitor_b = competitors[lower_competitor_index]
-
+    for competitor in competitiors:
         # Add two participants to the world
-        _set_controller_name_to_world(world_file, 'R0', competitor_a.controller_name)
-        _set_controller_name_to_world(world_file, 'R1', competitor_b.controller_name)
+        _set_controller_name_to_world(world_file, 'PARTICIPANT_ROBOT', competitor.controller_name)
 
         # Run match
-        match_directory = f'{competitor_a.controller_name}_vs_{competitor_b.controller_name}'
+        match_directory = f'{competitor.controller_name}_round'
         destination_directory = os.path.join(
             '/tmp',
             'animation',
@@ -172,26 +169,21 @@ def generate_competition(competition_config):
                 if len(pair) != 2 or line.startswith('#'):
                     continue
                 key, value = pair
-                if key == 'winner':
-                    winner = int(value)
-                elif key == 'points':
-                    points = [float(x) for x in value.split(',')]
+                if key == 'points':
+                    points = float(value)
 
-        if winner == 1:
-            competitor_a.rank, competitor_b.rank = competitor_b.rank, competitor_a.rank
-            competitors = sorted(competitors, key=lambda c: c.rank)
 
         # Store the results
         matches.append({
             'id': match_directory,
-            'competitor_a': str(competitor_a),
-            'competitor_b': str(competitor_b),
-            'winner': 'competitor_b' if winner == 1 else 'competitor_a',
+            'competitor': str(competitor),
             'points': points
         })
 
-        # Prepare next iteration
-        lower_competitor_index -= 1
+    competitors = sorted(competitors, key=lambda c: -c.points)
+    
+    for i in range(len(competitors)):
+        competitors[i].rank = i+1
 
     # Write animation
     wb_animation_action.utils.git.push_directory_to_branch('/tmp/output', clean=True)
