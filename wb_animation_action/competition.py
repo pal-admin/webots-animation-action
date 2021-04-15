@@ -139,7 +139,7 @@ def generate_competition(competition_config):
     _clone_controllers(competitors)
     compile_controllers()
 
-    for competitor in competitiors:
+    for competitor in competitors:
         # Add two participants to the world
         _set_controller_name_to_world(world_file, 'PARTICIPANT_ROBOT', competitor.controller_name)
 
