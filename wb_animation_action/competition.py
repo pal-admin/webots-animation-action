@@ -177,7 +177,7 @@ def generate_competition(competition_config):
             matches.append({
                 'id': match_directory,
                 'competitor': str(competitor),
-                'points': competitor.points
+                'points': competitor.points,
                 'round': world_ind
             })
 
