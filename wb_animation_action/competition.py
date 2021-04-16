@@ -38,7 +38,7 @@ class Competitor:
         self.username = None
         self.repository_name = None
         self.controller_name = None
-        self.points = 0.0
+        self.points = 0
         if self.git:
             self.username, self.repository_name = re.findall(
                 r'github\.com\/([a-zA-Z0-9\-\_]*)\/([a-zA-Z0-9\-\_]*)', self.git
@@ -124,8 +124,8 @@ def _clone_controllers(competitors):
 
 
 def generate_competition(competition_config):
-    world_file = competition_config['world']
-    world_info = get_world_info(world_file)
+    world_files = competition_config['worlds']
+    world_infos = [get_world_info(world_file) for world_file in world_files]
     competitors = _get_competitors()
     matches = []
 
@@ -140,45 +140,46 @@ def generate_competition(competition_config):
     compile_controllers()
 
     for competitor in competitors:
-        # Add two participants to the world
-        _set_controller_name_to_world(world_file, 'PARTICIPANT_ROBOT', competitor.controller_name)
+        competitor.points = 0
+        for world_ind in range(len(world_files)):
+            # Add two participants to the world
+            _set_controller_name_to_world(world_files[world_ind], 'PARTICIPANT_ROBOT', competitor.controller_name)
 
-        # Run match
-        match_directory = f'{competitor.controller_name}_round'
-        destination_directory = os.path.join(
-            '/tmp',
-            'animation',
-            match_directory
-        )
-        generate_animation_for_world(world_file, COMPETITION_TIMEOUT, destination_directory=destination_directory)
+            # Run match
+            match_directory = f'{competitor.controller_name}_round_{str(world_ind)}'
+            destination_directory = os.path.join(
+                '/tmp',
+                'animation',
+                match_directory
+            )
+            generate_animation_for_world(world_files[world_ind], COMPETITION_TIMEOUT, destination_directory=destination_directory)
 
-        json_file = glob(os.path.join(destination_directory, '*.json')).pop()
-        os.rename(json_file, os.path.join(destination_directory, match_directory + '.json'))
-        x3d_file = glob(os.path.join(destination_directory, '*.x3d')).pop()
-        os.rename(x3d_file, os.path.join(destination_directory, match_directory + '.x3d'))
-        html_file = glob(os.path.join(destination_directory, '*.html')).pop()
-        os.remove(html_file)
-        copy_tree(destination_directory, '/tmp/output')
+            json_file = glob(os.path.join(destination_directory, '*.json')).pop()
+            os.rename(json_file, os.path.join(destination_directory, match_directory + '.json'))
+            x3d_file = glob(os.path.join(destination_directory, '*.x3d')).pop()
+            os.rename(x3d_file, os.path.join(destination_directory, match_directory + '.x3d'))
+            html_file = glob(os.path.join(destination_directory, '*.html')).pop()
+            os.remove(html_file)
+            copy_tree(destination_directory, '/tmp/output')
 
-        # Update ranks
-        winner = None
-        points = []
-        with open('/tmp/results.txt', 'r') as f:
-            for line in f.readlines():
-                pair = line.split(':')
-                if len(pair) != 2 or line.startswith('#'):
-                    continue
-                key, value = pair
-                if key == 'points':
-                    points = float(value)
+            # Update points
+            with open('/tmp/results.txt', 'r') as f:
+                for line in f.readlines():
+                    pair = line.split(':')
+                    if len(pair) != 2 or line.startswith('#'):
+                        continue
+                    key, value = pair
+                    if key == 'points':
+                        competitor.points += int(value)
 
 
-        # Store the results
-        matches.append({
-            'id': match_directory,
-            'competitor': str(competitor),
-            'points': points
-        })
+            # Store the results
+            matches.append({
+                'id': match_directory,
+                'competitor': str(competitor),
+                'points': competitor.points
+                'round': world_ind
+            })
 
     competitors = sorted(competitors, key=lambda c: -c.points)
     
