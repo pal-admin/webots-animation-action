@@ -56,7 +56,7 @@
             const results = await loadResults();
 
             // Title
-            const title = `Leader Board ${results.world_info.title}`;
+            const title = `Leader Board`;
             document.title = title;
             document.getElementById('title').innerHTML = title;
             
@@ -71,6 +71,7 @@
                 rankingsNode.innerHTML += `<tr>
                     <td>${competitor.rank}</td>
                     <td>${getCompetitorNode(competitor)}</td>
+	            <td>${competitor.points}</td>
                 </tr>`;
             }
 
@@ -224,6 +225,7 @@
                 <tr>
                     <th>#</th>
                     <th>competitor  </th>
+		    <th>points</th>
                 </tr>
             </table>
         </div>

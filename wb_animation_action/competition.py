@@ -195,7 +195,7 @@ def generate_competition(competition_config):
         'ranking': [c.get_dict() for c in competitors],
         'matches': matches,
         'timestamp': time.time(),
-        'world_info': world_info
+        'world_info': world_infos
     }
     with open(os.path.join('/tmp/results', 'results.json'), 'w') as f:
         f.write(json.dumps(results))
