@@ -185,8 +185,13 @@ def generate_competition(competition_config):
 
     competitors = sorted(competitors, key=lambda c: -c.points)
     
+    previous_points = -1
+    rank_value = 1
     for i in range(len(competitors)):
-        competitors[i].rank = i+1
+        if previous_points != competitors[i].points:
+            previous_points = competitors[i].points
+            rank_value = i+1
+        competitors[i].rank = rank_value
 
     # Write animation
     wb_animation_action.utils.git.push_directory_to_branch('/tmp/output', clean=True)
