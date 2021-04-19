@@ -163,6 +163,7 @@ def generate_competition(competition_config):
             copy_tree(destination_directory, '/tmp/output')
 
             # Update points
+            points = 0
             with open('/tmp/results.txt', 'r') as f:
                 for line in f.readlines():
                     pair = line.split(':')
@@ -170,14 +171,15 @@ def generate_competition(competition_config):
                         continue
                     key, value = pair
                     if key == 'points':
-                        competitor.points += int(value)
+                        points = int(value)
+            competitor.points += points
 
 
             # Store the results
             matches.append({
                 'id': match_directory,
                 'competitor': str(competitor),
-                'points': competitor.points,
+                'points': points,
                 'round': world_ind
             })
 
