@@ -88,6 +88,8 @@
                 const resultNode = document.createElement('div');
                 resultNode.setAttribute('class', 'overview');
                 resultNode.innerHTML = `
+		    <div class="cell world id">${match.round}</div>
+
                     <div class="cell competitor">${getCompetitorNodeFromId(results.ranking, match.competitor)}</div>
                     <div class="cell points">${match.points}</div>
                 `;
