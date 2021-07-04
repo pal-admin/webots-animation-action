@@ -55,10 +55,10 @@
         async function init() {
             const results = await loadResults();
 
-            // Title
-            const title = `Leader Board`;
-            document.title = title;
-            document.getElementById('title').innerHTML = title;
+            // Title - Commented out as we want head != body
+            //const title = `Leader Board`;
+            //document.title = title;
+            //document.getElementById('title').innerHTML = title;
             
             // Time
             const d = new Date(0);
