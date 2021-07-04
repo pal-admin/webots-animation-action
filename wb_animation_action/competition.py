@@ -121,6 +121,10 @@ def _clone_controllers(competitors):
             python_filename = os.path.join(controller_path, 'participant_controller.py')
             if os.path.exists(python_filename):
                 os.rename(python_filename, os.path.join(controller_path, f'{competitor.controller_name}.py'))
+            # Update controller's internal name (Matlab)
+            matlab_filename = os.path.join(controller_path, 'participant_controller.m')
+            if os.path.exists(matlab_filename):
+                os.rename(matlab_filename, os.path.join(controller_path, f'{competitor.controller_name}.m'))
 
 
 def generate_competition(competition_config):
