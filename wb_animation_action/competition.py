@@ -116,15 +116,24 @@ def _clone_controllers(competitors):
                 competitor.repository_name
             )
             subprocess.check_output(f'git clone {repo} {controller_path}', shell=True)
-
+            print('Past clone subproccess')
+            
             # Update controller's internal name (Python)
             python_filename = os.path.join(controller_path, 'participant_controller.py')
             if os.path.exists(python_filename):
+                print('Entered Update internal name Python')
                 os.rename(python_filename, os.path.join(controller_path, f'{competitor.controller_name}.py'))
             # Update controller's internal name (Matlab)
             matlab_filename = os.path.join(controller_path, 'participant_controller.m')
             if os.path.exists(matlab_filename):
+                print('Entered Update internal name Matlab')
                 os.rename(matlab_filename, os.path.join(controller_path, f'{competitor.controller_name}.m'))
+            # Update controller's internal name (C++)
+            cpp_filename = os.path.join(controller_path, 'participant_controller.cpp')
+            if os.path.exists(cpp_filename):
+                print('Entered Update internal name C++')
+                os.rename(cpp_filename, os.path.join(controller_path, f'{competitor.controller_name}.cpp'))
+            print('Past Update controller internal name')
 
 
 def generate_competition(competition_config):
