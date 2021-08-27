@@ -184,7 +184,7 @@ def generate_competition(competition_config):
                         continue
                     key, value = pair
                     if key == 'points':
-                        points = int(value)
+                        points = int(float(value))
             competitor.points += points
 
 
